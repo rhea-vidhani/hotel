@@ -1,0 +1,323 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 CREATE TABLE hotel_branch (\
+  branch_ID INT PRIMARY KEY,\
+  branch_name VARCHAR(100) NOT NULL, \
+  city VARCHAR(100) UNIQUE,\
+  country VARCHAR(100)\
+  );\
+  \
+CREATE TABLE room_type (\
+  room_type_ID INT PRIMARY KEY,\
+  type_name VARCHAR(100) NOT NULL ,\
+  price_per_night DECIMAL(10,2) NOT NULL CHECK (price_per_night > 0) ,\
+  max_occupancy INT NOT NULL CHECK (max_occupancy > 0)\
+  );\
+  \
+CREATE TABLE guest(\
+  guest_ID INT PRIMARY KEY,\
+  first_name VARCHAR(100) not NULL,\
+  last_name VARCHAR(100) NOT NULL,\
+  email VARCHAR(100),\
+  phone INT UNIQUE NOT NULL\
+  );\
+  \
+CREATE TABLE employee (\
+  employee_ID INT PRIMARY KEY,\
+  firstname VARCHAR(100),\
+  lastname VARCHAR(100),\
+  branch_ID INT, \
+  employee_position VARCHAR(100),\
+  manager_ID INT,\
+  FOREIGN KEY (branch_ID) REFERENCES hotel_branch(branch_ID) ON DELETE CASCADE,\
+  FOREIGN KEY (manager_ID) REFERENCES employee(employee_ID) ON DELETE SET NULL\
+  );\
+  \
+CREATE TABLE room (\
+  room_ID VARCHAR(50) PRIMARY KEY,\
+  branch_ID INT,\
+  room_type_ID INT, \
+  FOREIGN KEY (branch_ID) REFERENCES hotel_branch(branch_ID) ON DELETE CASCADE,\
+  FOREIGN KEY (room_type_ID) REFERENCES room_type(room_type_ID) ON DELETE RESTRICT\
+);\
+\
+CREATE TABLE reservation (\
+  reservation_ID INT PRIMARY KEY,\
+  guest_ID INT,\
+  check_in_date DATE,\
+  check_out_date DATE,\
+  employee_ID INT,\
+  FOREIGN KEY (guest_ID) REFERENCES guest(guest_ID) ON DELETE CASCADE,\
+  FOREIGN KEY (employee_ID) REFERENCES employee(employee_ID) ON DELETE SET NULL,\
+  CHECK (check_out_date > check_in_date)\
+);\
+\
+CREATE TABLE reservation_room (\
+  reservation_ID INT,\
+  room_ID VARCHAR(50) NOT NULL,\
+  PRIMARY KEY (reservation_ID, room_ID),\
+  FOREIGN KEY (reservation_ID) REFERENCES reservation(reservation_ID) ON DELETE CASCADE,\
+  FOREIGN KEY (room_ID) REFERENCES room(room_ID) ON DELETE RESTRICT\
+);\
+\
+CREATE TABLE payment (\
+  payment_ID INT PRIMARY KEY,\
+  reservation_ID INT,\
+  FOREIGN KEY (reservation_ID) REFERENCES reservation(reservation_ID) ON DELETE CASCADE\
+);\
+\
+INSERT INTO hotel_branch(branch_ID, branch_name, city,country) VALUES \
+(1, 'Grand Central', 'New York', 'USA'),\
+(2, 'Sea View', 'Miami', 'USA'),\
+(3, 'Mountain Lodge', 'Denver', 'USA');\
+\
+INSERT INTO room_type(room_type_ID, type_name, price_per_night, max_occupancy) VALUES\
+(1, 'Single', 1000.00, 1),\
+(2, 'Double', 1500.00, 2),\
+(3, 'Suite', 3000.0, 3);\
+\
+INSERT INTO guest(guest_ID, first_name, last_name, email, phone) VALUES\
+(1, 'Danielle', 'Johnson', 'johnson.danielle@gmail.com', 1234567890),\
+(2, 'Jennifer', 'Miles', 'miles.jennifer@gmail.com', 1234567891),\
+(3, 'Lindsay', 'Blair', 'blair.lindsay@gmail.com', 1234567892),\
+(4, 'Mitchell', 'Clark', 'clark.mitchell@gmail.com', 1234567893),\
+(5, 'Linda', 'Morales', 'morales.linda@gmail.com', 1234567894), \
+(6, 'Micheal', 'Osborn', 'osborn.micheal@gmail.com', 1234567895),\
+(7, 'Daniel', 'Graham', 'graham.daniel@gmail.com', 1234567896),\
+(8, 'Tracy', 'Rodriguez', 'rodriguez.tracy@gmail.com', 1234567897),\
+(9, 'Monique', 'Henderson', 'henderson.monique@gmail.com', 1234567898),\
+(10, 'Chad', 'Welch', 'welch.chad@gmail.com', 1234567899),\
+(11, 'Collin', 'Jordan', 'jordan.collin@gmail.com', 1234567810),\
+(12, 'John', 'Leblanc', 'leblanc.john@gmail.com', 1234567811),\
+(13, 'Aaron', 'Myers', 'myers.aaron@gmail.com', 1234567812),\
+(14, 'Thomas', 'Calhoun', 'calhoun.thomas@gmail.com', 1234567813),\
+(15, 'James', 'Moran', 'moran.james@gmail.com', 1234567814),\
+(16, 'Justin', 'Kim', 'kim.justin@gmail.com', 1234567815),\
+(17, 'Jennifer', 'Harris', 'harris.jennifer@gmail.com', 1234567816),\
+(18, 'Charles', 'Ware', 'ware.charles@gmail.com', 1234567817),\
+(19, 'Nicole', 'Johnson', 'johnson.nicole@gmail.com', 1234567818),\
+(20, 'Donna', 'Ross', 'ross.donna@gmail.com', 1234567819);\
+\
+INSERT INTO employee(employee_ID, firstname, lastname, branch_ID, employee_position, manager_ID) VALUES\
+(1, 'Samuel', 'Joyce', 3, 'Manager', NULL),\
+(2, 'Darrell', 'Lam', 2, 'Receptionist', 5),\
+(3, 'James', 'Williams', 1, 'Receptionist', 4),\
+(4, 'Ryan', 'Meyer', 1, 'Manager', NULL), \
+(5, 'Lindsay', 'Mcdaniel', 2, 'Manager', NULL),\
+(6, 'Shelby', 'Mclaughlin', 3, 'Receptionist', 1),\
+(7, 'James', 'Reynolds', 1, 'Cleaner', 4),\
+(8, 'Stacy', 'Mccall', 1, 'Concierge', 4),\
+(9, 'Cindy', 'Abarada', 2, 'Concierge', 5),\
+(10, 'David', 'Mccullough', 3, 'Concierge', 1),\
+(11, 'William', 'Estrada', 2, 'Cleaner', 5),\
+(12, 'Mark', 'Terry', 3, 'cleaner', 1);\
+\
+INSERT INTO room(room_ID, branch_ID, room_type_ID) VALUES\
+('101A', 2, 1),\
+('101B', 2, 1),\
+('102A', 3, 2),\
+('102B', 1, 2),\
+('103A', 2, 3),\
+('103B', 1, 2),\
+('104A', 1, 3),\
+('104B', 3, 2),\
+('105A', 1, 2),\
+('105B', 2, 2),\
+('106A', 2, 1),\
+('106B', 2, 1),\
+('107A', 3, 2),\
+('107B', 1, 2),\
+('108A', 2, 3), \
+('108B', 1, 2),\
+('109A', 1, 3),\
+('109B', 3, 2),\
+('110A', 1, 2),\
+('110B', 2, 2);\
+\
+INSERT INTO reservation (reservation_ID, guest_ID, check_in_date, check_out_date, employee_ID) VALUES\
+(1, 1, '2025-06-02', '2025-06-04', 2),\
+(2, 2, '2025-06-02', '2025-06-06', 2),\
+(3, 3, '2025-06-02', '2025-06-05', 6),\
+(4, 4, '2025-06-02', '2025-06-09', 3),\
+(5, 5, '2025-06-02', '2025-06-12', 2),\
+(6, 6, '2025-06-02', '2025-06-09', 3),\
+(7, 7, '2025-06-02', '2025-06-14', 3),\
+(8, 8, '2025-06-02', '2025-06-10', 6),\
+(9, 9, '2025-06-02', '2025-06-12', 3),\
+(10, 10, '2025-06-02', '2025-06-14', 2),\
+(11, 11, '2025-06-10', '2025-06-14', 2),\
+(12, 12, '2025-06-10', '2025-06-16', 2),\
+(13, 13, '2025-06-10', '2025-06-18', 2),\
+(14, 14, '2025-06-10', '2025-06-14', 2),\
+(15, 15, '2025-06-10', '2025-06-15', 6),\
+(16, 16, '2025-06-10', '2025-06-19', 2),\
+(17, 17, '2025-06-10', '2025-06-20', 6),\
+(18, 18, '2025-06-10', '2025-06-25', 2),\
+(19, 19, '2025-06-10', '2025-06-28', 2),\
+(20, 20, '2025-06-10', '2025-06-28', 2),\
+(21, 8, '2025-06-09', '2025-06-18', 6),\
+(22, 15, '2025-06-15', '2025-06-20', 6),\
+(23, 18, '2025-06-20', '2025-06-30', 2),\
+(24, 20, '2025-06-28', '2025-07-05', 2),\
+(25, 3, '2025-06-05', '2025-06-12', 6);\
+\
+INSERT INTO reservation_room (reservation_ID, room_ID) VALUES\
+(1, '101A'),\
+(2, '101B'),\
+(3, '102A'),\
+(4, '102B'),\
+(5, '103A'),\
+(6, '103B'),\
+(7, '104A'),\
+(8, '104B'),\
+(9, '105A'),\
+(10, '105B'),\
+(11, '106A'),\
+(12, '106B'),\
+(13, '107A'),\
+(14, '107B'),\
+(15, '108A'),\
+(16, '108B'),\
+(17, '109A'),\
+(18, '109B'),\
+(19, '110A'),\
+(20, '110B'),\
+(21, '104B'),\
+(22, '108A'),\
+(23, '109B'),\
+(24, '110B'),\
+(25, '102A');\
+\
+INSERT INTO payment(payment_ID, reservation_ID) VALUES\
+(1000, 1),\
+(1001, 2), \
+(1002, 3), \
+(1003, 4), \
+(1004, 5), \
+(1005, 6), \
+(1006, 7), \
+(1007, 8), \
+(1008, 9), \
+(1009, 10), \
+(1010, 11), \
+(1011, 12), \
+(1012, 13), \
+(1013, 14), \
+(1014, 15), \
+(1015, 16), \
+(1016, 17), \
+(1017, 18),\
+(1018, 19), \
+(1019, 20),\
+(1020, 21),\
+(1021, 22),\
+(1022, 23),\
+(1023, 24),\
+(1024, 25);\
+\
+-- Drop Table \
+DROP TABLE DEMO;\
+\
+-- Tables \
+SELECT * FROM guest;\
+SELECT * FROM hotel_branch;\
+SELECT * FROM room_type;\
+SELECT * FROM employee;\
+SELECT * FROM room;\
+SELECT * FROM reservation;\
+SELECT * FROM reservation_room;\
+\
+-- Query for one-to-many relationship \
+SELECT e.*, hb.branch_name\
+FROM hotel_branch hb\
+JOIN employee e ON hb.branch_ID = e.branch_ID;\
+\
+--Query for many-to-many relationship\
+SELECT r.reservation_ID, r.guest_ID, r.check_in_date, r.check_out_date, r.employee_ID, ro.room_ID\
+FROM reservation r\
+JOIN reservation_room rr ON r.reservation_ID = rr.reservation_ID\
+JOIN room ro ON rr.room_ID = ro.room_ID \
+WHERE ro.branch_ID = 1;\
+\
+--Query for self-referencing\
+SELECT e1.firstname AS Manager, e2.firstname AS Employee\
+FROM employee e1\
+JOIN employee e2 on e1.employee_ID = e2.manager_ID;\
+\
+--USING (Query for one-to-one relationship)\
+SELECT * FROM reservation r JOIN payment p USING (reservation_ID);\
+\
+--GROUP BY and HAVING\
+SELECT employee_ID, COUNT(*) AS total_reservations\
+FROM reservation\
+GROUP BY employee_ID\
+HAVING COUNT(*) > 1;\
+\
+SELECT guest_ID, COUNT(*) AS total_bookings\
+FROM reservation\
+GROUP BY guest_ID \
+HAVING COUNT(*) > 1;\
+\
+SELECT guest_ID, check_in_date, check_out_date\
+FROM reservation\
+WHERE guest_ID IN (3, 8, 15, 18, 20);\
+\
+-- QUERY LIKE\
+SELECT * FROM guest\
+WHERE email LIKE '%gmail.com';\
+\
+-- SUBQUERY\
+SELECT first_name, last_name, phone\
+FROM guest\
+WHERE guest_ID IN (\
+    SELECT guest_ID FROM reservation WHERE employee_ID = 2\
+);\
+\
+-- Create view\
+CREATE VIEW reservation_detail_view AS\
+SELECT \
+  r.reservation_ID,\
+  g.first_name || ' ' || g.last_name AS guest_name,\
+  rm.room_ID,\
+  hb.branch_name,\
+  rt.type_name AS room_type,\
+  r.check_in_date,\
+  r.check_out_date,\
+  e.firstname || ' ' || e.lastname AS handled_by\
+FROM reservation r\
+JOIN guest g ON r.guest_ID = g.guest_ID\
+JOIN reservation_room rr ON r.reservation_ID = rr.reservation_ID\
+JOIN room rm ON rr.room_ID = rm.room_ID\
+JOIN room_type rt ON rm.room_type_ID = rt.room_type_ID\
+JOIN hotel_branch hb ON rm.branch_ID = hb.branch_ID\
+JOIN employee e ON r.employee_ID = e.employee_ID;\
+SELECT * FROM reservation_detail_view;\
+\
+-- Total revenue by hotel branch\
+SELECT \
+  hb.branch_name,\
+  SUM(rt.price_per_night) AS total_revenue\
+FROM reservation r\
+JOIN reservation_room rr ON r.reservation_ID = rr.reservation_ID\
+JOIN room rm ON rr.room_ID = rm.room_ID\
+JOIN room_type rt ON rm.room_type_ID = rt.room_type_ID\
+JOIN hotel_branch hb ON rm.branch_ID = hb.branch_ID\
+GROUP BY hb.branch_name\
+ORDER BY total_revenue DESC;\
+\
+-- Total revenue by room_type\
+SELECT \
+  rt.type_name AS room_type,\
+  COUNT(*) AS total_bookings,\
+  SUM(rt.price_per_night) AS total_revenue\
+FROM reservation r\
+JOIN reservation_room rr ON r.reservation_ID = rr.reservation_ID\
+JOIN room rm ON rr.room_ID = rm.room_ID\
+JOIN room_type rt ON rm.room_type_ID = rt.room_type_ID\
+GROUP BY rt.type_name\
+ORDER BY total_revenue DESC;}
